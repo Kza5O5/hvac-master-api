@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from .models import *
 from django.db.models import Count 
+from rest_framework import generics ,serializers
+from .serializers import ProductSerializer, BlogSerializer
 
 # Create your views here.
 
@@ -166,13 +168,16 @@ def contact(request):
 #     }   
 #     return render(request, 'add-to-cart.html', context)
 
+from datetime import datetime
+
 def checkout(request):
+    # Your existing code
     top_header = TopHeader.objects.all()
     dataMenu = Menu.objects.annotate(sub_count = Count('submenus'))  
     dataSubMenu = SubMenu.objects.all() 
     dataSub2Menu = Sub2Menu.objects.all() 
-    footer_section = FooterSection.objects.all()
-    # Get cart data from session
+    footer_section = FooterSection.objects.all() 
+    
     cart = request.session.get('cart', {})
     cart_clean = {k: v for k, v in cart.items() if isinstance(v, dict)}
     for item in cart_clean.values():
@@ -180,6 +185,19 @@ def checkout(request):
         item['price'] = float(item.get('price', 0))
         item['subtotal'] = item['price'] * item['quantity']
     total_price = sum(item['subtotal'] for item in cart_clean.values())
+    
+    # Save order to session order_history
+    order_history = request.session.get('order_history', [])
+    order_history.append({
+        'date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        'items': list(cart_clean.values()),
+        'total_price': total_price
+    })
+    request.session['order_history'] = order_history
+    
+    # Clear the cart after checkout
+    request.session['cart'] = {}
+
     context = {
         'top_headers': top_header,
         'footer_sections': footer_section,
@@ -191,9 +209,11 @@ def checkout(request):
     }
     return render(request, 'checkout.html', context)
 
+def order_history(request):
+    orders = request.session.get('order_history', [])
+    return render(request, 'order_history.html', {'orders': orders})
 
-from rest_framework import generics
-from .serializers import ProductSerializer
+
 
 # Create your views here.
 
@@ -208,6 +228,33 @@ class CarsDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Car.objects.all()
     serializer_class = ProductSerializer
 
+class BlogListCreate(generics.ListCreateAPIView):
+    queryset = Blog.objects.all()
+    serializer_class = BlogSerializer
+
+class BlogDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Blog.objects.all()
+    serializer_class = BlogSerializer
+
+class AddToCartSerializer(serializers.Serializer):
+    product_id = serializers.IntegerField()
+    quantity = serializers.IntegerField(default=1)
+
+class CheckoutSerializer(serializers.Serializer):
+    first_name = serializers.CharField(max_length=100)
+    last_name = serializers.CharField(max_length=100)
+    email = serializers.EmailField()
+    address = serializers.CharField(max_length=255)
+    city = serializers.CharField(max_length=100)
+    state = serializers.CharField(max_length=100)
+    zip_code = serializers.CharField(max_length=20)
+    country = serializers.CharField(max_length=100)
+    phone_number = serializers.CharField(max_length=20, required=False, allow_blank=True)
+    payment_method = serializers.ChoiceField(choices=['credit_card', 'paypal'])
+    def validate(self, data):
+        if not data.get('first_name') or not data.get('last_name'):
+            raise serializers.ValidationError("First name and last name are required.")
+        return data
 
 # add-to-cart
 from django.shortcuts import render, redirect, get_object_or_404
@@ -280,7 +327,6 @@ def remove_from_cart(request, product_id):
     cart.pop(str(product_id), None)
     request.session['cart'] = cart
     return redirect('view_cart')
-
 
 def ProtectedAPI(request):
     token = request.GET.get('token')

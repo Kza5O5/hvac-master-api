@@ -74,9 +74,9 @@
                                     <td class="text-primary fw-semibold">${{ item.price }}</td>
                                     <td>
                                         <input type="number" value="{{ item.quantity }}" min="1"
-                                            class="form-control text-center w-50 mx-auto">
+                                            class="form-control text-center w-50 mx-auto qty-input">
                                     </td>
-                                    <td class="text-success fw-semibold">${{ item.subtotal|floatformat:2 }}</td>
+                                    <td class="text-success fw-semibold subtotal-cell">${{ item.subtotal|floatformat:2 }}</td>
                                     <td>
                                         <a href="{% url 'remove_from_cart' id %}"
                                             class="btn btn-danger btn-sm remove-cart-item"
@@ -101,26 +101,62 @@
     {% include 'FooterSectionBegin.html' %}
     {% include 'JsPlugins.html' %}
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.remove-cart-item').forEach(function (btn) {
-                btn.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    var row = btn.closest('tr');
-                    fetch(btn.getAttribute('data-remove-url'), {
-                        method: 'GET',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
-                        .then(response => {
-                            if (response.ok) {
-                                row.remove();
-                            }
-                        });
-                });
+document.addEventListener('DOMContentLoaded', function () {
+    // Remove cart item
+    document.querySelectorAll('.remove-cart-item').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            var row = btn.closest('tr');
+            fetch(btn.getAttribute('data-remove-url'), {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    row.remove();
+                }
             });
         });
-    </script>
+    });
+
+    // Update subtotal when quantity changes
+    document.querySelectorAll('.qty-input').forEach(function (input) {
+        input.addEventListener('change', function () {
+            if (parseInt(input.value) < 1) input.value = 1;
+            var row = input.closest('tr');
+            var price = parseFloat(row.querySelector('.text-primary').textContent.replace('$', ''));
+            var subtotalCell = row.querySelector('.subtotal-cell');
+            var subtotal = price * parseInt(input.value);
+            subtotalCell.textContent = '$' + subtotal.toFixed(2);
+        });
+    });
+
+    // Save cart data to localStorage before going to checkout
+    const checkoutBtn = document.querySelector('.btn.btn-primary.px-4');
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', function () {
+            let cartData = [];
+            document.querySelectorAll('tbody tr').forEach(row => {
+                let name = row.querySelector('p').textContent.trim();
+                let price = parseFloat(row.querySelector('.text-primary').textContent.replace('$', ''));
+                let quantity = parseInt(row.querySelector('.qty-input').value);
+                let subtotal = parseFloat(row.querySelector('.subtotal-cell').textContent.replace('$', ''));
+                
+                cartData.push({
+                    name: name,
+                    price: price,
+                    quantity: quantity,
+                    subtotal: subtotal
+                });
+            });
+            localStorage.setItem('cartData', JSON.stringify(cartData));
+        });
+    }
+});
+</script>
+
 </body>
 
 </html>

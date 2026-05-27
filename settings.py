@@ -41,9 +41,7 @@ INSTALLED_APPS = [
     'ckeditor',
     'rest_framework',
     'ckeditor_uploader',
-    'api',
 ]
-
 
 STATIC_URL = 'static/'
 
