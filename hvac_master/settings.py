@@ -126,8 +126,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'hvac_db',
-        'USER': 'postgres',
-        'PASSWORD': '1234',
+        'USER': 'hvac_user',
+        'PASSWORD': 'hvac_password',
         'HOST': 'localhost',
         'PORT': '5432',
     }

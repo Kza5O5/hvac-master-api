@@ -1,14 +1,31 @@
 from rest_framework import serializers
+from .models import Car, Blog, Service
 
-from .models import *
 
 class ProductSerializer(serializers.ModelSerializer):
-    class Meta:        
+    class Meta:
         model = Car
-        fields = ['id', 'name', 'year','image','price', 'stock', 'vin', 'mile', 'tranmission', 'housepw']
+        fields = [
+            'id',
+            'name',
+            'year',
+            'image',
+            'price',
+            'stock',
+            'vin',
+            'mile',
+            'tranmission',
+            'housepw'
+        ]
+
 
 class BlogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
-        fields = ['id', 'image', 'user', 'date']
+        fields = 'all'
 
+
+class ServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Service
+        fields = 'all'

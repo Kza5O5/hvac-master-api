@@ -4,7 +4,53 @@ from .views import *
 from django.conf import settings
 from django.conf.urls.static import static
 
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 urlpatterns = [
+        path(
+    'auth/register/',
+    RegisterView.as_view(),
+    name='register'
+),
+
+path(
+    'auth/login/',
+    TokenObtainPairView.as_view(),
+    name='login'
+),
+
+path(
+    'auth/token/refresh/',
+    TokenRefreshView.as_view(),
+    name='token_refresh'
+),
+
+path(
+    'profile/',
+    ProfileView.as_view(),
+    name='profile'
+),
+
+path(
+    'change-password/',
+    ChangePasswordView.as_view(),
+    name='change_password'
+),
+
+path(
+    'Service/',
+    ServiceListCreate.as_view(),
+    name='ServiceList'
+),
+
+path(
+    'Service/<int:pk>/',
+    ServiceDetail.as_view(),
+    name='ServiceDetail'
+),
     path('', views.index, name='index'),
     path('about/', views.about, name='about'),
     path('blog/', views.blog, name='blog'),

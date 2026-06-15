@@ -4,8 +4,24 @@ from .models import *
 from django.db.models import Count 
 from rest_framework import generics ,serializers
 from .serializers import ProductSerializer, BlogSerializer
-
+from django.contrib.auth.models import User
+from rest_framework import permissions, status
+from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 # Create your views here.
+
+from .serializers import (
+    ProductSerializer,
+    BlogSerializer,
+    ServiceSerializer
+)
+
+from .auth_serializers import (
+    RegisterSerializer,
+    ProfileSerializer,
+    ChangePasswordSerializer
+)
 
 def index(request):
     top_header = TopHeader.objects.all()
@@ -216,7 +232,62 @@ def order_history(request):
 
 
 # Create your views here.
+class ServiceListCreate(generics.ListCreateAPIView):
+    queryset = Service.objects.all()
+    serializer_class = ServiceSerializer
 
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter
+    ]
+
+    search_fields = ['maintitle']
+    ordering_fields = ['id']
+
+
+class ServiceDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Service.objects.all()
+    serializer_class = ServiceSerializer
+
+
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = RegisterSerializer
+
+
+class ProfileView(generics.RetrieveUpdateAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+
+class ChangePasswordView(generics.UpdateAPIView):
+    serializer_class = ChangePasswordSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        user = request.user
+
+        if not user.check_password(
+            request.data["old_password"]
+        ):
+            return Response(
+                {"error": "Wrong password"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user.set_password(
+            request.data["new_password"]
+        )
+
+        user.save()
+
+        return Response(
+            {"message": "Password updated"}
+        )
 # ListCreateAPIView provides GET (list) and POST (create) actions
 class CarsListCreate(generics.ListCreateAPIView):
     queryset = Car.objects.all()

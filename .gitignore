@@ -1,26 +1,7 @@
-# Python
+venv/
 __pycache__/
 *.pyc
-
-# Virtual env
-env/
-venv/
-
-# Database
 db.sqlite3
-
-# Media
-media/
-
-# IDE
-.vscode/
-.idea/
-
-# Logs
-*.log
-
-# Static uploads (optional)
-static/img/Car Added/
-
-# Env file
 .env
+media/
+staticfiles/
