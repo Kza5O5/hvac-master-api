@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,12 @@ SECRET_KEY = 'django-insecure-3b@l1^-&8upyq2k@8(payd3i#xm214-bpbv(rqde=#r9qp-jv+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "0.0.0.0",
+    "web",
+]
 
 
 # Application definition
@@ -125,11 +131,11 @@ WSGI_APPLICATION = 'hvac_master.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'hvac_db',
-        'USER': 'hvac_user',
-        'PASSWORD': 'hvac_password',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('DB_NAME', 'hvac_db'),
+        'USER': os.getenv('DB_USER', 'hvac_user'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'hvac_password'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 

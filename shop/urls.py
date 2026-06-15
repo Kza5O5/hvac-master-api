@@ -3,6 +3,7 @@ from . import views
 from .views import * 
 from django.conf import settings
 from django.conf.urls.static import static
+from .health_views import *
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -51,6 +52,9 @@ path(
     ServiceDetail.as_view(),
     name='ServiceDetail'
 ),
+path('health/', health_check, name='health'),
+path('readiness/', readiness_check, name='readiness'),
+path('liveness/', liveness_check, name='liveness'),
     path('', views.index, name='index'),
     path('about/', views.about, name='about'),
     path('blog/', views.blog, name='blog'),

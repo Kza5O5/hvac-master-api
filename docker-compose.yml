@@ -1,0 +1,61 @@
+services:
+
+  db:
+    image: postgres:17
+    container_name: hvac_postgres
+    restart: always
+
+    environment:
+      POSTGRES_DB: hvac_db
+      POSTGRES_USER: hvac_user
+      POSTGRES_PASSWORD: hvac_password
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    container_name: hvac_django
+    restart: always
+
+    command: >
+      sh -c "
+      python manage.py migrate &&
+      python manage.py runserver 0.0.0.0:8000
+      "
+
+    volumes:
+      - .:/app
+
+    ports:
+      - "8000:8000"
+
+    depends_on:
+      - db
+
+    environment:
+      DB_NAME: hvac_db
+      DB_USER: hvac_user
+      DB_PASSWORD: hvac_password
+      DB_HOST: db
+      DB_PORT: 5432
+
+  nginx:
+    image: nginx:latest
+    container_name: hvac_nginx
+    restart: always
+
+    ports:
+      - "80:80"
+
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
