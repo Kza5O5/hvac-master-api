@@ -1,0 +1,136 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="HVAC Template">
+    <meta name="keywords" content="HVAC, unica, creative, html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HVAC | Template</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+
+    <!-- Css Styles -->
+     {% include 'CssStyles.html' %}
+</head>
+
+<body>
+    <!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Offcanvas Menu Begin -->
+     {% include 'OffcanvasMenuBegin.html' %}
+    <!-- Offcanvas Menu End -->
+
+    <!-- Header Section Begin -->
+     {% include 'HeaderSectionBegin.html' %}
+    <!-- Header Section End -->
+
+    <!-- Breadcrumb End -->
+    <div class="breadcrumb-option set-bg" data-setbg="{% static 'img/breadcrumb-bg.jpg' %}">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="breadcrumb__text">
+                        {% for title_banner in title_banners %}
+                        <h2>{{title_banner.title}}</h2>
+                        {% endfor %}
+                        <div class="breadcrumb__links">
+                            <a href="/"><i class="fa fa-home"></i> Home</a>
+                            {% for text_banner in text_banners %}
+                            <span>{{text_banner.text}}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb Begin -->
+
+    <!-- Car Section Begin -->
+    <section class="car spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="car__filter__option">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6">
+                                <div class="car__filter__option__item">
+                                    <h6>Show On Page</h6>
+                                    <select>
+                                        <option value="">9 Car</option>
+                                        <option value="">15 Car</option>
+                                        <option value="">20 Car</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <div class="car__filter__option__item car__filter__option__item--right">
+                                    <h6>Sort By</h6>
+                                    <select>
+                                        <option value="">Price: Highest Fist</option>
+                                        <option value="">Price: Lowest Fist</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        {% for dataCar in dataCars %}
+                        <div class="col-lg-4 col-md-4">
+                            <div class="car__item">
+                                <div class="car__item__pic">
+                                    <!-- this image does not work -->
+                                    <img src="{{ dataCar.image.url }}" alt="solo-image">
+                                </div>
+                                <div class="car__item__text">
+                                    <div class="car__item__text__inner">
+                                        <div class="label-date">{{dataCar.year}}</div>
+                                        <h5><a href="#">{{dataCar.name}}</a></h5>
+                                        <ul>
+                                            <li><span>{{dataCar.mile}}</span> mi</li>
+                                            <li>{{dataCar.tranmission}}</li>
+                                            <li><span>{{dataCar.housepw}}</span> hp</li>
+                                        </ul>
+                                    </div>
+                                    <div class="car__item__price">
+                                        <span class="car-option">For Sale</span>
+                                        <h6>${{dataCar.originalPrice}}</h6>
+                                        <h6>${{dataCar.price}}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="pagination__option">
+                        <a href="#" class="active">1</a>
+                        <a href="#">2</a>
+                        <a href="#">3</a>
+                        <a href="#"><span class="arrow_carrot-2right"></span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Car Section End -->
+
+    <!-- Footer Section Begin -->
+    {% include 'FooterSectionBegin.html' %}
+    <!-- Footer Section End -->
+
+    <!-- Search Begin -->
+     {% include 'SearchBegin.html' %}
+    <!-- Search End -->
+
+    <!-- Js Plugins -->
+     {% include 'JsPlugins.html' %}
+</body>
+
+</html>

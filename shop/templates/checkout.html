@@ -1,0 +1,328 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Checkout">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | HVAC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    {% include 'CssStyles.html' %}
+    <style>
+        /* Simple styles for order history */
+        #orderHistory {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+        }
+        #orderHistory h3 {
+            margin-top: 0;
+        }
+        .order {
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+        }
+        .order:last-child {
+            border-bottom: none;
+        }
+        .order-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .order-item img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Offcanvas Menu Begin -->
+    {% include 'OffcanvasMenuBegin.html' %}
+    <!-- Offcanvas Menu End -->
+
+    <!-- Header Section Begin -->
+    {% include 'HeaderSectionBegin.html' %}
+    <!-- Header Section End -->
+
+    <!-- Breadcrumb End -->
+    <div class="breadcrumb-option set-bg" data-setbg="{% static 'img/breadcrumb-bg.jpg' %}">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="breadcrumb__text">
+                        <h2>Check Out</h2>
+                        <div class="breadcrumb__links">
+                            <a href="/"><i class="fa fa-home"></i> Home</a>
+                            <span>Check Out</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb Begin -->
+    <section class="checkout py-5">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Billing Details -->
+                <div class="col-lg-8">
+                    <div class="p-4 border rounded-4 shadow-sm bg-white">
+                        <h4 class="mb-4 fw-bold">Billing Details</h4>
+                        <form id="checkout-form" action="#" method="post">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Address <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Phone <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" required>
+                                </div>
+                                <div class="col-12 text-end mt-3">
+                                    <button type="submit" class="btn btn-primary px-4">Place Order</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="col-lg-4">
+                    <div class="p-4 border rounded-4 shadow-sm bg-light">
+                        <h4 class="mb-4 fw-bold">Your Order</h4>
+                        <ul class="list-group mb-3">
+                            {% for id, item in cart_items %}
+                            <li class="list-group-item d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-3">
+                                    {% if item.image %}
+                                    <img src="{{ item.image }}" alt="{{ item.name }}" class="img-thumbnail"
+                                        style="width: 60px; height: auto; border-radius: 0.5rem;">
+                                    {% else %}
+                                    <img src="{% static 'img/no-image.png' %}" alt="No image" class="img-thumbnail"
+                                        style="width: 60px; height: auto; border-radius: 0.5rem;">
+                                    {% endif %}
+                                    <div class="small fw-medium">
+                                        {{ item.name }}
+                                        <span class="text-muted">x{{ item.quantity }}</span>
+                                    </div>
+                                </div>
+                                <span class="fw-semibold text-primary">${{ item.subtotal|floatformat:2 }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <div class="d-flex justify-content-between border-top pt-3 fw-bold">
+                            <span>Total</span>
+                            <span class="text-success">${{ total_price|floatformat:2 }}</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Order History toggle link -->
+    <div style="max-width:900px; margin: 20px auto; text-align:center;">
+        <a href="#" id="toggleOrderHistory" style="font-weight: bold; font-size: 1.1rem;">Show Order History</a>
+    </div>
+
+    <!-- Order History Section -->
+    <section id="orderHistory" style="display:none;">
+        <div class="container">
+            <h2 style="text-align:center; margin-bottom: 25px;">Your Past Orders</h2>
+            <div id="ordersContainer" style="max-width: 900px; margin: 0 auto;"></div>
+        </div>
+    </section>
+
+    <!-- Invoice Modal -->
+    <div id="invoiceModal" class="modal" tabindex="-1"
+        style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:9999;">
+        <div
+            style="background:#fff; max-width:500px; margin:60px auto; padding:30px; border-radius:10px; position:relative;">
+            <h4 class="mb-3 fw-bold">Invoice</h4>
+            <div id="invoiceContent">
+                <!-- Invoice details will be filled by JS -->
+            </div>
+            <button onclick="document.getElementById('invoiceModal').style.display='none'" class="btn mt-3"
+                style="background-color: #dc3545; color: #fff; border: none;">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <!-- Render invoice items hidden -->
+    <div id="invoice-data" style="display:none;">
+        <ul style="padding-left:20px;">
+            {% for id, item in cart_items %}
+            <li>
+                {{ item.name }} x{{ item.quantity }} - ${{ item.subtotal|floatformat:2 }}
+            </li>
+            {% endfor %}
+        </ul>
+        <hr>
+        <p><strong>Total:</strong> ${{ total_price|floatformat:2 }}</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let savedCart = localStorage.getItem('cartData');
+            if (savedCart) {
+                savedCart = JSON.parse(savedCart);
+                let orderList = document.querySelector('.list-group');
+                let totalPrice = 0;
+                orderList.innerHTML = ''; // Clear default server items
+
+                savedCart.forEach(item => {
+                    totalPrice += item.subtotal;
+                    orderList.innerHTML += `
+                        <li class="list-group-item d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="small fw-medium">
+                                    ${item.name} <span class="text-muted">x${item.quantity}</span>
+                                </div>
+                            </div>
+                            <span class="fw-semibold text-primary">$${item.subtotal.toFixed(2)}</span>
+                        </li>
+                    `;
+                });
+
+                document.querySelector('.text-success').textContent = `$${totalPrice.toFixed(2)}`;
+            }
+
+            // Handle form submission & invoice modal
+            document.getElementById('checkout-form').addEventListener('submit', function (e) {
+                e.preventDefault();
+                var name = this.querySelector('input[type="text"]').value;
+                var email = this.querySelector('input[type="email"]').value;
+                var address = this.querySelectorAll('input[type="text"]')[1].value;
+                var phone = this.querySelectorAll('input[type="text"]')[2].value;
+
+                let invoiceHtml = `
+                    <p><strong>Name:</strong> ${name}</p>
+                    <p><strong>Email:</strong> ${email}</p>
+                    <p><strong>Address:</strong> ${address}</p>
+                    <p><strong>Phone:</strong> ${phone}</p>
+                    <hr>
+                    <h5>Your Order</h5>
+                    <ul style="padding-left:20px;">
+                `;
+
+                if (savedCart) {
+                    invoiceHtml += savedCart.map(item => 
+                        `<li>${item.name} x${item.quantity} - $${item.subtotal.toFixed(2)}</li>`
+                    ).join('');
+                }
+
+                invoiceHtml += `
+                    </ul>
+                    <hr>
+                    <p><strong>Total:</strong> ${document.querySelector('.text-success').textContent}</p>
+                `;
+
+                document.getElementById('invoiceContent').innerHTML = invoiceHtml;
+                document.getElementById('invoiceModal').style.display = 'block';
+
+                // Save current order to localStorage order history
+                let orderHistory = localStorage.getItem('orderHistory');
+                orderHistory = orderHistory ? JSON.parse(orderHistory) : [];
+                orderHistory.push({
+                    date: new Date().toLocaleString(),
+                    items: savedCart,
+                    totalPrice: document.querySelector('.text-success').textContent
+                });
+                localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
+            });
+
+            // Toggle order history visibility
+            const toggleBtn = document.getElementById('toggleOrderHistory');
+            const orderHistorySection = document.getElementById('orderHistory');
+
+            toggleBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (orderHistorySection.style.display === 'none') {
+                    renderOrderHistory();
+                    orderHistorySection.style.display = 'block';
+                    toggleBtn.textContent = 'Hide Order History';
+                } else {
+                    orderHistorySection.style.display = 'none';
+                    toggleBtn.textContent = 'Show Order History';
+                }
+            });
+
+            // Render order history from localStorage
+            function renderOrderHistory() {
+                const container = document.getElementById('ordersContainer');
+                let orderHistory = localStorage.getItem('orderHistory');
+                if (!orderHistory) {
+                    container.innerHTML = '<p>You have no past orders.</p>';
+                    return;
+                }
+                orderHistory = JSON.parse(orderHistory);
+                if (orderHistory.length === 0) {
+                    container.innerHTML = '<p>You have no past orders.</p>';
+                    return;
+                }
+                let html = '';
+                orderHistory.slice().reverse().forEach((order, idx, arr) => { // show latest first
+                    // Compute the original index in orderHistory array
+                    const orderIdx = arr.length - 1 - idx;
+                    html += `<div class="order">
+                        <h3>Order placed on ${order.date}</h3>
+                        <ul>`;
+                    order.items.forEach(item => {
+                        html += `<li class="order-item">
+                            <span>${item.name} x${item.quantity} - $${item.subtotal.toFixed(2)}</span>
+                        </li>`;
+                    });
+                    html += `</ul>
+                        <strong>Total: ${order.totalPrice}</strong>
+                        <button class="delete-order-btn" data-order-idx="${orderIdx}" style="margin-left: 10px; background: #e74c3c; color: #fff; border: none; padding: 6px 12px; border-radius: 3px; cursor: pointer;">
+                            Delete
+                        </button>
+                    </div>`;
+                });
+                container.innerHTML = html;
+
+                // Attach delete event listeners
+                container.querySelectorAll('.delete-order-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        let idx = parseInt(this.getAttribute('data-order-idx'));
+                        let orderHistory = localStorage.getItem('orderHistory');
+                        orderHistory = orderHistory ? JSON.parse(orderHistory) : [];
+                        orderHistory.splice(idx, 1);
+                        localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
+                        renderOrderHistory();
+                    });
+                });
+            }
+        });
+    </script>
+
+    {% include 'FooterSectionBegin.html' %}
+    {% include 'JsPlugins.html' %}
+</body>
+
+</html>

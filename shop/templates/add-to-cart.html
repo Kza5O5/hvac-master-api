@@ -1,0 +1,162 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Add to Cart">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add to Cart | HVAC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    {% include 'CssStyles.html' %}
+</head>
+
+<body>
+    <!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Offcanvas Menu Begin -->
+    {% include 'OffcanvasMenuBegin.html' %}
+    <!-- Offcanvas Menu End -->
+
+    <!-- Header Section Begin -->
+    {% include 'HeaderSectionBegin.html' %}
+    <!-- Header Section End -->
+
+    <!-- Breadcrumb End -->
+    <div class="breadcrumb-option set-bg" data-setbg="{% static 'img/breadcrumb-bg.jpg' %}">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="breadcrumb__text">
+                        <h2>Cart Listing</h2>
+                        <div class="breadcrumb__links">
+                            <a href="/"><i class="fa fa-home"></i> Home</a>
+                            <span>Your Cart</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb Begin -->
+
+    <section class="cart py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="table-responsive shadow rounded-4 overflow-hidden">
+                        <table class="table align-middle text-center mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th scope="col">Product</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Quantity</th>
+                                    <th scope="col">Total</th>
+                                    <th scope="col">Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for id, item in cart_items %}
+                                <tr>
+                                    <td class="d-flex align-items-center gap-3 p-3">
+                                        {% if item.image %}
+                                        <img src="{{ item.image }}" alt="{{ item.name }}" class="img-thumbnail"
+                                            style="width: 80px; height: auto;">
+                                        {% else %}
+                                        <img src="{% static 'img/no-image.png' %}" alt="No image" class="img-thumbnail"
+                                            style="width: 80px; height: auto;">
+                                        {% endif %}
+                                        <p class="mb-0 fw-semibold">{{ item.name }}</p>
+                                    </td>
+                                    <td class="text-primary fw-semibold">${{ item.price }}</td>
+                                    <td>
+                                        <input type="number" value="{{ item.quantity }}" min="1"
+                                            class="form-control text-center w-50 mx-auto qty-input">
+                                    </td>
+                                    <td class="text-success fw-semibold subtotal-cell">${{ item.subtotal|floatformat:2 }}</td>
+                                    <td>
+                                        <a href="{% url 'remove_from_cart' id %}"
+                                            class="btn btn-danger btn-sm remove-cart-item"
+                                            data-remove-url="{% url 'remove_from_cart' id %}">Remove</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                <!-- Add more rows if needed -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <a href="{% url 'car' %}" class="btn btn-outline-secondary">← Continue Shopping</a>
+                        <a href="{% url 'checkout' %}" class="btn btn-primary px-4">Proceed to Checkout →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% include 'FooterSectionBegin.html' %}
+    {% include 'JsPlugins.html' %}
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Remove cart item
+    document.querySelectorAll('.remove-cart-item').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            var row = btn.closest('tr');
+            fetch(btn.getAttribute('data-remove-url'), {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    row.remove();
+                }
+            });
+        });
+    });
+
+    // Update subtotal when quantity changes
+    document.querySelectorAll('.qty-input').forEach(function (input) {
+        input.addEventListener('change', function () {
+            if (parseInt(input.value) < 1) input.value = 1;
+            var row = input.closest('tr');
+            var price = parseFloat(row.querySelector('.text-primary').textContent.replace('$', ''));
+            var subtotalCell = row.querySelector('.subtotal-cell');
+            var subtotal = price * parseInt(input.value);
+            subtotalCell.textContent = '$' + subtotal.toFixed(2);
+        });
+    });
+
+    // Save cart data to localStorage before going to checkout
+    const checkoutBtn = document.querySelector('.btn.btn-primary.px-4');
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', function () {
+            let cartData = [];
+            document.querySelectorAll('tbody tr').forEach(row => {
+                let name = row.querySelector('p').textContent.trim();
+                let price = parseFloat(row.querySelector('.text-primary').textContent.replace('$', ''));
+                let quantity = parseInt(row.querySelector('.qty-input').value);
+                let subtotal = parseFloat(row.querySelector('.subtotal-cell').textContent.replace('$', ''));
+                
+                cartData.push({
+                    name: name,
+                    price: price,
+                    quantity: quantity,
+                    subtotal: subtotal
+                });
+            });
+            localStorage.setItem('cartData', JSON.stringify(cartData));
+        });
+    }
+});
+</script>
+
+</body>
+
+</html>

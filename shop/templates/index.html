@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="HVAC Template">
+    <meta name="keywords" content="HVAC, unica, creative, html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HVAC | Template</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+
+    <!-- Css Styles -->
+     {% include 'CssStyles.html' %}
+</head>
+
+<body>
+    <!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Offcanvas Menu Begin -->
+     {% include 'OffcanvasMenuBegin.html' %}
+    <!-- Offcanvas Menu End -->
+
+    <!-- Header Section Begin -->
+     {% include 'HeaderSectionBegin.html' %}
+    <!-- Header Section End -->
+
+    <!-- Hero Section Begin -->
+     {% include 'HeroSectionBegin.html' %}
+    <!-- Hero Section End -->
+
+    <!-- Services Se ction Begin -->
+     {% include 'ServicesSectionBegin.html' %}
+    <!-- Services Section End -->
+
+    <!-- Feature Section Begin -->
+     {% include 'FeatureSectionBegin.html' %}
+    <!-- Feature Section End -->
+
+    <!-- Car Section Begin -->
+     {% include 'CarSectionBegin.html' %}
+    <!-- Car Section End -->
+
+    <!-- Chooseus Section Begin -->
+     {% include 'ChooseusSectionBegin.html' %}
+    <!-- Chooseus Section End -->
+     
+    <!-- Latest Blog Section Begin -->
+     {% include 'LatestBlogSection.html' %}
+    <!-- Latest Blog Section End -->
+
+    <!-- Cta Begin -->
+     {% comment %} {% include 'CtaBegin.html' %} {% endcomment %}
+    <!-- Cta End -->
+
+    <!-- Footer Section Begin -->
+    {% include 'FooterSectionBegin.html' %}
+    <!-- Footer Section End -->
+
+    <!-- Search Begin -->
+     {% include 'SearchBegin.html' %}
+    <!-- Search End -->
+
+    <!-- Js Plugins -->
+     {% include 'JsPlugins.html' %}
+</body>
+
+</html>

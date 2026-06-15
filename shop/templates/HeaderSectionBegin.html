@@ -1,0 +1,113 @@
+{% load static %}
+<header class="header">
+    <div class="header__top">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-7">
+                    <ul class="header__top__widget">
+                        {% for header in top_headers %}
+                            <li><i class="fa fa-clock-o"></i> Week day: {{ header.shift }}</li>
+                            <li><i class="fa fa-envelope-o"></i> {{ header.email }}</li>
+                        {% empty %}
+                            <li>No header info available.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-lg-5">
+                    <div class="header__top__right">
+                        <div class="header__top__phone">
+                            <i class="fa fa-phone"></i>
+                            {% for header in top_headers %}
+                                <span>{{ header.phone }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="header__top__social">
+                            <a href="#"><i class="fa fa-facebook"></i></a>
+                            <a href="#"><i class="fa fa-twitter"></i></a>
+                            <a href="#"><i class="fa fa-google"></i></a>
+                            <a href="#"><i class="fa fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-2">
+                <div class="header__logo">
+                    <a href="/"><img src="{% static 'img/logo.png' %}" alt=""></a>
+                </div>
+            </div>
+            <div class="col-lg-10">
+                <div class="header__nav">
+                    <nav class="header__menu">
+                        <ul id="navigation">
+                            {% for dataMenu in dataMenus %} 
+                                <li class="menu-item-with-dropdown">
+                                    <a href="{% url dataMenu.url %}" class="menu-link{% if dataMenu.sub_count > 0 %} has-dropdown{% endif %}">
+                                        {{dataMenu.menuName}}
+                                    </a>
+                                    <ul class="dropdown{% if dataMenu.sub_count > 0 %} submenu{% endif %}" style="display:none;">
+                                        {% for dataSubMenu in dataSubMenus %} 
+                                            {% if dataMenu.id == dataSubMenu.menuId_id %} 
+                                            <li><a href="{% url dataSubMenu.url %}">{{dataSubMenu.menuName}}</a></li> 
+                                            {% endif %} 
+                                        {% endfor %} 
+                                    </ul>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </nav>
+
+                    <div class="header__nav__widget">
+                        <div class="header__nav__widget__btn">
+                            <a href="{% url 'view_cart' %}"><i class="fa fa-cart-plus"></i></a>
+                            <a href="#" class="search-switch"><i class="fa fa-search"></i></a>
+                        </div>
+                        <a href="{% url 'checkout' %}" class="primary-btn">Check Out</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="canvas__open">
+            <span class="fa fa-bars"></span>
+        </div>
+    </div>
+</header>
+<script>
+    // Show dropdown only when hovering over the menu text (anchor)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.menu-link.has-dropdown').forEach(function(link) {
+            var dropdown = link.parentElement.querySelector('.dropdown');
+            if (!dropdown) return;
+            link.addEventListener('mouseenter', function() {
+                dropdown.style.display = 'block';
+            });
+            link.addEventListener('mouseleave', function() {
+                dropdown.style.display = 'none';
+            });
+            dropdown.addEventListener('mouseenter', function() {
+                dropdown.style.display = 'block';
+            });
+            dropdown.addEventListener('mouseleave', function() {
+                dropdown.style.display = 'none';
+            });
+        });
+    });
+</script>
+<style>
+    /* Optional: Ensure dropdown is positioned correctly */
+    .menu-item-with-dropdown {
+        position: relative;
+    }
+    .dropdown.submenu {
+        position: absolute;
+        left: 0;
+        top: 100%;
+        min-width: 180px;
+        z-index: 100;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+</style>

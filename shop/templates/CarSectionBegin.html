@@ -1,0 +1,47 @@
+{% load static %}
+<section class="car spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title">
+                        <span>Our Car</span>
+                        <h2>Best Vehicle Offers</h2>
+                    </div>
+                    <ul class="filter__controls">
+                        <li class="active" data-filter="*">Most Researched</li>
+                        <li data-filter=".sale">Latest on sale</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row car-filter">
+
+                {% for dataCar in dataCars %}
+                <div class="col-lg-3 col-md-4 col-sm-6 mix {{dataCar.laste_on_sale}}">
+                    <div class="car__item">
+                        <a href="{% url 'car_details' dataCar.id %}">
+                            <div class="car__item__pic">
+                            <img src="{{dataCar.image.url}}" alt="car-image">
+                        </div>
+                        <div class="car__item__text">
+                            <div class="car__item__text__inner">
+                                <div class="label-date">{{dataCar.year}}</div>
+                                <h5>{{dataCar.name}}</h5>
+                                <ul style="display: flex; gap: -15px; padding: 0; margin: 0; list-style: none;">
+                                    <li><span>{{dataCar.mile}}</span>mi</li>
+                                    <li>{{dataCar.tranmission}}</li>
+                                    <li><span>{{dataCar.housepw}}</span>hp</li>
+                                </ul>
+                            </div>
+                            <div class="car__item__price">
+                                <span class="car-option sale">For Sale</span>
+                                <h6>${{dataCar.price}}</h6>
+                                {% comment %} <h6>${{dataCar.price}}</h6> {% endcomment %}
+                            </div>
+                        </div>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
