@@ -3,6 +3,7 @@ from . import views
 from .views import * 
 from django.conf import settings
 from django.conf.urls.static import static
+from .health_views import *
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
