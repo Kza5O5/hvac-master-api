@@ -1,55 +1,56 @@
 name: Django CI
+
 on:
-push:
-branches:
-- main
-- master
-pull_request:
-branches:
-- main
-- master
+  push:
+    branches:
+      - main
+      - master
+
+  pull_request:
+    branches:
+      - main
+      - master
+
 jobs:
-test:
-runs-on: ubuntu-latest
+  test:
+    runs-on: ubuntu-latest
 
-services:
-  postgres:
-    image: postgres:17
+    services:
+      postgres:
+        image: postgres:17
 
-    env:
-      POSTGRES_DB: hvac_db
-      POSTGRES_USER: hvac_user
-      POSTGRES_PASSWORD: hvac_password
+        env:
+          POSTGRES_DB: hvac_db
+          POSTGRES_USER: hvac_user
+          POSTGRES_PASSWORD: hvac_password
 
-    ports:
-      - 5432:5432
+        ports:
+          - 5432:5432
 
-    options: >-
-      --health-cmd="pg_isready -U hvac_user"
-      --health-interval=10s
-      --health-timeout=5s
-      --health-retries=5
+        options: >-
+          --health-cmd="pg_isready -U hvac_user"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
-steps:
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-  - name: Checkout Code
-    uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
 
-  - name: Set up Python
-    uses: actions/setup-python@v5
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    with:
-      python-version: "3.13"
+      - name: Run Migrations
+        run: |
+          python manage.py migrate
 
-  - name: Install Dependencies
-    run: |
-      python -m pip install --upgrade pip
-      pip install -r requirements.txt
-
-  - name: Run Migrations
-    run: |
-      python manage.py migrate
-
-  - name: Run Tests
-    run: |
-      python manage.py test
+      - name: Run Tests
+        run: |
+          python manage.py test

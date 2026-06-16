@@ -5,3 +5,4 @@ db.sqlite3
 .env
 media/
 staticfiles/hvac-master.tar
+hvac-master.tar
