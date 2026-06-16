@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: hvac-django
+  namespace: hvac
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: hvac-django
+
+  template:
+    metadata:
+      labels:
+        app: hvac-django
+
+    spec:
+      containers:
+        - name: hvac-django
+          image: zenggshash/hvac-master:v1
+          imagePullPolicy: Always
+
+          ports:
+            - containerPort: 8000
+
+          env:
+            - name: DB_NAME
+              value: "hvac_db"
+
+            - name: DB_USER
+              value: "hvac_user"
+
+            - name: DB_PASSWORD
+              value: "hvac_password"
+
+            - name: DB_HOST
+              value: "postgres-service"
+
+            - name: DB_PORT
+              value: "5432"

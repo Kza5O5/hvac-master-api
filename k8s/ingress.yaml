@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: hvac-ingress
+  namespace: hvac
+
+spec:
+  rules:
+  - host: hvac.local
+
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+
+        backend:
+          service:
+            name: hvac-service
+
+            port:
+              number: 8000

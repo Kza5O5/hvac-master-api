@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: hvac-config
+  namespace: hvac
+
+data:
+  DB_NAME: hvac_db
+  DB_HOST: postgres-service
+  DB_PORT: "5432"
